@@ -46,6 +46,18 @@ public class HttpRequester {
             this.code = code;
         }
 
+        public T getData() {
+            return data;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
         @Override
         public String toString() {
             return (data != null ? data.toString(): "null") + '\n' + message + '\n' + code + '\n';
@@ -412,6 +424,7 @@ public class HttpRequester {
         data.putString(NetworkRequests.NetworkUtils.REGISTER_NAME, name);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_DESCRIPTION, description);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_ADDRESS, address);
+        data.putString(NetworkRequests.NetworkUtils.REGISTER_PHONE, phone);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_DESCRIPTION, description);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_COUNTRY_ID, countryId);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_CITY_ID, cityId);

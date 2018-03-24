@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class City {
 
     static final class CityUtils {
-        public static final String CITY_ID = "id";
+        public static final String CITY_ID = "cid";
         public static final String CITY_NAME = "name";
     }
 
@@ -35,6 +35,11 @@ public class City {
         return mName;
     }
 
+    @Override
+    public String toString() {
+        return "Id: " + mId + '\n' + "Name: " + mName;
+    }
+
     public static class CityParser {
         public static ArrayList<City> parseCities(@NonNull JSONArray jsonData) throws JSONException {
             ArrayList<City> result = new ArrayList<City>();
@@ -45,6 +50,8 @@ public class City {
 
                 result.add(new City(id, name));
             }
+
+            result.add(0, new City("", "City"));
             return result;
         }
     }

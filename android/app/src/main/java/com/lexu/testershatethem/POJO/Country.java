@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Country {
 
     static final class CountryUtils {
-        public static final String COUNTRY_ID = "id";
+        public static final String COUNTRY_ID = "cid";
         public static final String COUNTRY_NAME = "name";
     }
 
@@ -35,6 +35,11 @@ public class Country {
         return mName;
     }
 
+    @Override
+    public String toString() {
+        return "Id: " + mId + '\n' + "Name: " + mName;
+    }
+
     public static class CountryParser {
         public static ArrayList<Country> parseCountries(@NonNull JSONArray jsonData) throws JSONException {
             ArrayList<Country> result = new ArrayList<Country>();
@@ -45,6 +50,8 @@ public class Country {
 
                 result.add(new Country(id, name));
             }
+
+            result.add(0, new Country("", "Country"));
             return result;
         }
     }

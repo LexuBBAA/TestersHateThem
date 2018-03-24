@@ -1,20 +1,27 @@
 package com.lexu.testershatethem;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lexu.testershatethem.POJO.HttpRequester;
+import com.lexu.testershatethem.POJO.UserInstance;
 
 import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+
+    static final String USER_EMAIL = "email";
+    static final int REGISTER_COMPLETE = 200;
 
     private AppCompatEditText emailInput = null;
     private AppCompatEditText passwordInput = null;
@@ -38,30 +45,70 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == AppCompatActivity.RESULT_OK && resultCode == REGISTER_COMPLETE) {
+            String email = data.getStringExtra(USER_EMAIL);
+            this.emailInput.setText(email != null ? email: "");
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onClick(final View v) {
         v.setClickable(false);
         v.setFocusable(false);
 
         switch (v.getId()) {
             case R.id.login_button:
+                if(UserInstance.getInstance().getSessionId() != null) {
+                    postInToast("A session is already active");
+                    v.setClickable(true);
+                    v.setFocusable(true);
+                    return;
+                }
+
                 try {
                     mRequestManager.login(
                             this.emailInput.getText().toString(),
                             this.passwordInput.getText().toString(),
                             new HttpRequester.OnNetworkListener() {
                                 @Override
-                                public void onSuccess(HttpRequester.NetworkPayload payload) {
+                                public void onSuccess(final HttpRequester.NetworkPayload payload) {
                                     Log.e(TAG, "onSuccess: " + payload.toString());
                                     LoginActivity.this.runOnUiThread(() -> {
-                                        v.setClickable(true);
-                                        v.setFocusable(true);
+                                        int code = payload.getCode();
+                                        if(code != 200) {
+                                            String msg = payload.getMessage();
+                                            postInToast(msg);
+                                            return;
+                                        }
+
+                                        String token = (String) payload.getData();
+                                        UserInstance.getInstance().setToken(token, new UserInstance.OnUserUpdateListener() {
+                                            @Override
+                                            public void onSuccess(ResponseCode code) {
+                                                LoginActivity.this.runOnUiThread(LoginActivity.this::login);
+                                            }
+
+                                            @Override
+                                            public void onFail(ResponseCode code, String message) {
+                                                LoginActivity.this.runOnUiThread(() -> {
+                                                    v.setClickable(true);
+                                                    v.setFocusable(true);
+                                                });
+                                            }
+                                        });
                                     });
                                 }
 
                                 @Override
-                                public void onFailure(HttpRequester.NetworkPayload payload) {
+                                public void onFailure(final HttpRequester.NetworkPayload payload) {
                                     Log.e(TAG, "onFailure: " + payload.toString());
                                     LoginActivity.this.runOnUiThread(() -> {
+                                        String message = payload.getMessage();
+                                        postInToast(message);
                                         v.setClickable(true);
                                         v.setFocusable(true);
                                     });
@@ -70,14 +117,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     );
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
+                    v.setClickable(true);
+                    v.setFocusable(true);
                 }
                 break;
 
             case R.id.register_link:
+                goToRegister();
                 break;
 
             default:
                 Log.e(TAG, "onClick: Unknown view clicked: v.getId() = " + v.getId() );
         }
+    }
+
+    private void login() {
+        Intent navigate = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(navigate);
+        this.loginButton.setClickable(true);
+        this.loginButton.setFocusable(true);
+    }
+
+    private void goToRegister() {
+        Intent navigate = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivityForResult(navigate, AppCompatActivity.RESULT_OK);
+    }
+
+    private void postInSnackbar(String msg) {
+        Snackbar.make(this.loginButton.getRootView(), msg, Snackbar.LENGTH_INDEFINITE)
+                .setAction("Retry", v -> {
+                    this.loginButton.callOnClick();
+                })
+                .show();
+    }
+
+    private void postInToast(String msg) {
+        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
     }
 }

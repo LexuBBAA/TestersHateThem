@@ -11,7 +11,6 @@ import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-import static com.lexu.testershatethem.POJO.HttpRequester.NetworkCalls.LOGIN;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.CITIES;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.CITY_COUNTRY_ID;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.COUNTRIES;
@@ -25,6 +24,7 @@ final class NetworkRequests {
     static class NetworkUtils {
         private static final int API_PORT = 8000;
         private static final String LOGIN = "login";
+        private static final String REGISTER = "register";
         static final String COUNTRIES = "countries";
         static final String CITIES = "cities/";
 
@@ -42,14 +42,18 @@ final class NetworkRequests {
 
         //region REGISTER
         static final String REGISTER_USERNAME = "email";
-        static final String REGISTER_NAME = "name";
+        static final String REGISTER_NAME = "user_name";
         static final String REGISTER_PASSWORD = "password";
-        static final String REGISTER_DESCRIPTION = "description";
+        static final String REGISTER_DESCRIPTION = "user_desc";
         static final String REGISTER_ADDRESS = "address";
         static final String REGISTER_PHONE = "phone";
-        static final String REGISTER_TYPE = "type";
+        static final String REGISTER_TYPE = "user_type";
         static final String REGISTER_COUNTRY_ID = "country_id";
         static final String REGISTER_CITY_ID = "city_id";
+        //endregion
+
+        //region MAIN_SCREEN
+        static final String MAIN_CEVA = "";
         //endregion
 
         //region COUNTRY + CITY
@@ -109,10 +113,8 @@ final class NetworkRequests {
                 }
 
                 return new Request.Builder()
-                        .url(NetworkUtils.API_URL + LOGIN)
-                        .post(
-                                PostRequestBuilder.loginBody(email, password)
-                        )
+                        .url(NetworkUtils.API_URL + NetworkUtils.LOGIN)
+                        .post(PostRequestBuilder.loginBody(email, password))
                         .build();
                 //endregion
             case REGISTER:
@@ -164,7 +166,7 @@ final class NetworkRequests {
                 }
 
                 return new Request.Builder()
-                        .url(NetworkUtils.API_URL)
+                        .url(NetworkUtils.API_URL + NetworkUtils.REGISTER)
                         .post(
                                 PostRequestBuilder.registerBody(
                                         email,
