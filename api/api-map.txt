@@ -1,0 +1,60 @@
+GET /address
+    response success: success, data
+    response failure: success, message
+
+POST /address
+    request body: city_id, country_id, address
+    response success: success, message
+    response failure: success, message
+
+GET /cities/:country_id
+    response success: success, data
+    response failure: success, message
+
+GET /countries
+    response success: success, data
+    response failure: success, message
+
+GET /listing/:city_id:
+    response success: success, data
+    response failure: success, message
+
+POST /login
+    request body: email, password
+    response success: success, message, user_type, token
+    response failure: success, message
+
+GET /profile
+    response success: success, data
+    response failure: success, message
+
+POST /register 
+    request body: email, password, user_name, user_type, desc, city_id, country_id, address, phone
+    response success: success, message, user_type, token
+    response failure: success, message
+
+GET /transactions
+    response success: success, data
+    response failure: success, message
+
+POST /transactions
+        response success: success, transaction_id
+        response failure: success, message
+
+POST /transactions/:tid/approve
+        request body: quantity, due_date
+        response success: success, message
+        response failure: success, message
+
+POST /transactions/:tid/finish
+        response success: success, message
+        response failure: success, message
+
+POST /transactions/:tid/rating
+        request body: rating, message
+        response success: success, message
+        response failure: success, message
+
+DELETE /transactions/:tid
+        response success: success, message
+        response failure: success, message
