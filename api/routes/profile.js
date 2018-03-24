@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
 
     db.query(`SELECT name, description FROM users WHERE uid = ${user_id}`, (err, results) => {
         if (err) {
+            console.log(err);
             res.json({
                 success: false,
                 message: 'could not get profile!'

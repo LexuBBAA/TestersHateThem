@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     db.query(`SELECT * FROM countries`, (err, results) => {
         if (err) {
+            console.log(err);
             res.json({
                 success: false,
                 message: 'could not retrieve countries!'

@@ -31,6 +31,7 @@ router.post('/', (req, res) => {
 
     db.query(`SELECT add_address('${user_id}','${city_id}','${country_id}','${address}') AS status`, (err, results) => {
         if (err) {
+            console.log(err);
             res.json({
                 success: false,
                 message: 'could not add address!'
@@ -39,7 +40,8 @@ router.post('/', (req, res) => {
         }
 
         res.json({
-            success: true
+            success: true,
+            message: 'address added!'
         })
         
     });
