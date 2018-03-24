@@ -37,6 +37,7 @@ router.post('/', (req, res) => {
 
             res.json({
                 success: true,
+                message: 'registered successfully!',
                 token: token
             })
         }
