@@ -11,8 +11,12 @@ router.post('/', (req, res) => {
     let name =        req.body.name;
     let type =        req.body.type;
     let description = req.body.description;
+    let city_id =     req.body.city_id;
+    let country_id =  req.body.country_id;
+    let address =     req.body.address;
 
-    db.query(`SELECT register('${email}', '${password}', '${name}', '${type}', '${description}') AS status`, (err, results) => {
+
+    db.query(`SELECT register('${email}', '${password}', '${name}', '${type}', '${description}', '${city_id}', '${country_id}', '${address}') AS status`, (err, results) => {
         if (err) {
             console.log(err);
             res.json({

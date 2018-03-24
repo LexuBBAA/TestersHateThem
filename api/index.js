@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 // routes
 const login = require('./routes/login');
 const register = require('./routes/register');
+const cities = require('./routes/cities');
+const countries = require('./routes/countries');
+const address = require('./routes/address');
 
 // app variables
 const app = express();
@@ -35,22 +38,27 @@ function requireToken(req, res, next) {
     }
 }
 
+app.use((req, res, next) => {
+    console.log(`REQUEST ${req.body}`);
+});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/login', login);
 app.use('/register', register);
-
+app.use('/cities', cities);
+app.use('/countries', countries);
 
 app.use(requireToken);
+
+app.use('/address', address);
 
 app.get('/', (req, res) => {
     res.json({
         user_id: req.body.user_id
     })
 })
-
 
 // ...
 
