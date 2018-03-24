@@ -1,19 +1,27 @@
-const express = require('express');
+const express    = require('express');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv').config();
-const jwt = require('jsonwebtoken');
+const dotenv     = require('dotenv').config();
+const jwt        = require('jsonwebtoken');
 
 // routes
-const login = require('./routes/login');
-const register = require('./routes/register');
-const cities = require('./routes/cities');
-const countries = require('./routes/countries');
-const address = require('./routes/address');
+const login        = require('./routes/login');
+const register     = require('./routes/register');
+const cities       = require('./routes/cities');
+const countries    = require('./routes/countries');
+const address      = require('./routes/address');
+const listing      = require('./routes/listing');
+const profile      = require('./routes/profile');
+const transactions = require('./routes/transactions');
 
 // app variables
 const app = express();
 
-// auth
+// middlewares
+function logger(req, res, next) {
+    console.log(`${req.ip}\t${req.method}\t${req.path}\t${JSON.stringify(req.body)}`);
+    next();
+}
+
 function requireToken(req, res, next) {
     let token = req.headers.token || '';
 
@@ -33,17 +41,24 @@ function requireToken(req, res, next) {
             }
 
             req.body.user_id = decoded.user_id;
+            req.body.user_type = decoded.user_type;
             next();
         })
     }
 }
 
-app.use((req, res, next) => {
-    console.log(`REQUEST ${req.body}`);
-});
+function badRequest(req, res, next) {
+    res.json({
+        success: false,
+        message: 'bad request!'
+    })
+}
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(logger);
 
 app.use('/login', login);
 app.use('/register', register);
@@ -53,13 +68,17 @@ app.use('/countries', countries);
 app.use(requireToken);
 
 app.use('/address', address);
+app.use('/profile', profile);
+app.use('/listing', listing);
+app.use('/transactions', transactions);
 
 app.get('/', (req, res) => {
     res.json({
-        user_id: req.body.user_id
-    })
+        user_id: req.body.user_id,
+        user_type: req.body.user_type
+    });
 })
 
-// ...
+app.use(badRequest);
 
 app.listen(process.env.PORT, () => console.log(`server started on port ${process.env.PORT}`));
