@@ -3,9 +3,11 @@ package com.lexu.testershatethem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -35,6 +37,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setTitle("Login");
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+
         this.emailInput = (AppCompatEditText) findViewById(R.id.email_input_field);
         this.passwordInput = (AppCompatEditText) findViewById(R.id.password_input_field);
         this.loginButton = (AppCompatButton) findViewById(R.id.login_button);
@@ -42,6 +52,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         this.loginButton.setOnClickListener(this);
         this.registerLink.setOnClickListener(this);
+
+        View invisibleView = (View) findViewById(R.id.invisible_view);
+        invisibleView.setOnClickListener(this);
     }
 
     @Override
@@ -124,6 +137,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             case R.id.register_link:
                 goToRegister();
+                break;
+
+            case R.id.invisible_view:
+                this.emailInput.setText("test@test.com");
+                this.passwordInput.setText("test");
+                v.setClickable(true);
+                v.setFocusable(true);
                 break;
 
             default:

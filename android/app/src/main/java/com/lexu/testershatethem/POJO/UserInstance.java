@@ -98,6 +98,18 @@ public final class UserInstance {
         }
     }
 
+    public void logout() {
+        synchronized (LOCK) {
+            this.sessionId = null;
+            mEmail = null;
+            mName = null;
+            mDescription = null;
+            mPhone = null;
+            mAddress = null;
+            mType = null;
+        }
+    }
+
     //region Getters
     public synchronized String getSessionId() {
         return this.sessionId;
