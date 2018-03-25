@@ -1,5 +1,5 @@
 GET /address
-    response success: success, data
+    response success: success, data = { aid, name, address }
     response failure: success, message
 
 POST /address
@@ -8,15 +8,15 @@ POST /address
     response failure: success, message
 
 GET /cities/:country_id
-    response success: success, data
+    response success: success, data = { cid, country_id, name, name_small }
     response failure: success, message
 
 GET /countries
-    response success: success, data
+    response success: success, data = { cid, name }
     response failure: success, message
 
 GET /listing
-    response success: success, data
+    response success: success, data = [{ uid, name, city, address }]
     response failure: success, message
 
 POST /login
@@ -25,7 +25,11 @@ POST /login
     response failure: success, message
 
 GET /profile
-    response success: success, data
+    response success: success, data = { uid, email, name, phone, description, score }
+    response failure: success, message
+
+GET /profile/:id
+    response success: success, data = { uid, email, name, phone, description, score }
     response failure: success, message
 
 POST /register 
@@ -34,7 +38,7 @@ POST /register
     response failure: success, message
 
 GET /transactions
-    response success: success, data
+    response success: success, data = { tid, state, quantity, start_date, due_date, finish_date, rating, message, uid, name }
     response failure: success, message
 
 POST /transactions
@@ -57,4 +61,8 @@ POST /transactions/:tid/rating
 
 DELETE /transactions/:tid
     response success: success, message
+    response failure: success, message
+
+GET /rankings
+    response success: success, data = { uid, email, name, phone, description, score }
     response failure: success, message

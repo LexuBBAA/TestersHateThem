@@ -25,4 +25,25 @@ router.get('/', (req, res) => {
     });
 })
 
+router.get('/:id', (req, res) => {
+    let id = req.params.id;
+
+    db.query(`SELECT uid, email, name, phone, description, score FROM users WHERE uid = ${id}`, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.json({
+                success: false,
+                message: 'could not get profile!'
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            data: results
+        })
+        
+    });
+})
+
 module.exports = router
