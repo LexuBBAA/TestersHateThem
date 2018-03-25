@@ -30,7 +30,7 @@ router.post('/', (req, res) => {
     let cid = '';
     let pid = '';
 
-    if (req.user_type == 'provider') {
+    if (req.body.user_type == 'provider') {
         cid = req.body.id;
         pid = req.body.user_id;
     } else {
@@ -171,7 +171,7 @@ router.delete('/:tid', (req, res) => {
         let status = results[0].status;
 
         if (status < 0) {
-            res.json({
+            res.json({                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                 success: false,
                 message: 'could not delete transaction!'
             })
