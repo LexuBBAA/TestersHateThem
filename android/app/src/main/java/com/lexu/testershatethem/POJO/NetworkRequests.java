@@ -14,6 +14,9 @@ import okhttp3.RequestBody;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.CITIES;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.CITY_COUNTRY_ID;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.COUNTRIES;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.PROFILE;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.TOKEN;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.USER_ID;
 
 /**
  * Created by lexu on 24.03.2018.
@@ -25,6 +28,8 @@ final class NetworkRequests {
         private static final int API_PORT = 8000;
         private static final String LOGIN = "login";
         private static final String REGISTER = "register";
+        private static final String LISTING = "listing";
+        static final String PROFILE = "profile";
         static final String COUNTRIES = "countries";
         static final String CITIES = "cities/";
 
@@ -53,7 +58,7 @@ final class NetworkRequests {
         //endregion
 
         //region MAIN_SCREEN
-        static final String MAIN_CEVA = "";
+        static final String USER_ID = "id";
         //endregion
 
         //region COUNTRY + CITY
@@ -92,6 +97,12 @@ final class NetworkRequests {
                     .add(NetworkUtils.REGISTER_DESCRIPTION, description)
                     .add(NetworkUtils.REGISTER_COUNTRY_ID, countryId)
                     .add(NetworkUtils.REGISTER_CITY_ID, cityId)
+                    .build();
+        }
+
+        static RequestBody userProfile(String profileId) {
+            return new FormBody.Builder()
+                    .add(NetworkUtils.PROFILE, profileId)
                     .build();
         }
     }
@@ -182,8 +193,12 @@ final class NetworkRequests {
                         .build();
                 //endregion
             case GET_BASE_DATA:
-                //TODO: Build base data request
-                return null;
+                //region Listing Request
+                return new Request.Builder()
+                        .addHeader(TOKEN, UserInstance.getInstance().getSessionId())
+                        .url(NetworkUtils.API_URL + NetworkUtils.LISTING)
+                        .build();
+                //endregion
             case GET_COUNTRIES:
                 //region Build Countries Request
                 return new Request.Builder()
@@ -198,6 +213,22 @@ final class NetworkRequests {
                 }
                 return new Request.Builder()
                         .url(NetworkUtils.API_URL + CITIES + countryId)
+                        .build();
+                //endregion
+            case GET_MY_PROFILE:
+                //region Current User Profile Request
+                return new Request.Builder()
+                        .addHeader(TOKEN, UserInstance.getInstance().getSessionId())
+                        .url(NetworkUtils.API_URL + PROFILE)
+                        .build();
+                //endregion
+            case GET_USERS_PROFILES:
+                //region Users Profiles Request
+                String profileId = data.getString(USER_ID);
+                return new Request.Builder()
+                        .addHeader(TOKEN, UserInstance.getInstance().getSessionId())
+                        .post(PostRequestBuilder.userProfile(profileId))
+                        .url(NetworkUtils.API_URL + NetworkUtils.PROFILE)
                         .build();
                 //endregion
             default:

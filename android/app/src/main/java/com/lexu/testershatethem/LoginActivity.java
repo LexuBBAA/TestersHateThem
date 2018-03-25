@@ -3,6 +3,7 @@ package com.lexu.testershatethem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -98,8 +99,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                             return;
                                         }
 
-                                        String token = (String) payload.getData();
-                                        UserInstance.getInstance().setToken(token, new UserInstance.OnUserUpdateListener() {
+                                        Pair<String, String> pair = (Pair<String, String>) payload.getData();
+                                        String token = pair.first;
+                                        String type = pair.second;
+                                        UserInstance.getInstance().setToken(token, type, new UserInstance.OnUserUpdateListener() {
                                             @Override
                                             public void onSuccess(ResponseCode code) {
                                                 LoginActivity.this.runOnUiThread(LoginActivity.this::login);

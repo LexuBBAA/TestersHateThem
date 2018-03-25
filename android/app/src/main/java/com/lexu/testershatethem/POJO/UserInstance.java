@@ -27,6 +27,7 @@ public final class UserInstance {
     private String mPhone = null;
     private String mAddress = null;
     private String mType = null;
+    private int mRating = -1;
 
     private static final Object LOCK = new Object();
 
@@ -40,9 +41,10 @@ public final class UserInstance {
     private UserInstance() {
     }
 
-    public synchronized void setToken(String token, OnUserUpdateListener listener) {
+    public synchronized void setToken(String token, String type, OnUserUpdateListener listener) {
         if(INSTANCE.sessionId == null) {
             INSTANCE.sessionId = token;
+            INSTANCE.mType = type;
             listener.onSuccess(OnUserUpdateListener.ResponseCode.SUCCESS);
         } else {
             listener.onFail(OnUserUpdateListener.ResponseCode.ERROR, "Session already active");
@@ -50,51 +52,13 @@ public final class UserInstance {
     }
     //endregion
 
-    public void setData(String email, String type, String name, String description, String phone, String address, OnUserUpdateListener listener) {
-        boolean result = true;
-
+    public void setData(String email, String name, String description, String phone, int rating) {
         synchronized (LOCK) {
-            if (INSTANCE.mName == null) {
-                INSTANCE.mName = name;
-            } else {
-                result = false;
-            }
-
-            if (INSTANCE.mDescription == null) {
-                INSTANCE.mDescription = description;
-            } else {
-                result = false;
-            }
-
-            if (INSTANCE.mAddress == null) {
-                INSTANCE.mAddress = address;
-            } else {
-                result = false;
-            }
-
-            if (INSTANCE.mPhone == null) {
-                INSTANCE.mPhone = phone;
-            } else {
-                result = false;
-            }
-
-            if(INSTANCE.mEmail == null) {
-                INSTANCE.mEmail = email;
-            } else {
-                result = false;
-            }
-
-            if(INSTANCE.mType == null) {
-                INSTANCE.mType = type;
-            } else {
-                result = false;
-            }
-
-            if (result) {
-                listener.onSuccess(OnUserUpdateListener.ResponseCode.SUCCESS);
-            } else {
-                listener.onFail(OnUserUpdateListener.ResponseCode.ERROR, "Data was already set");
-            }
+            INSTANCE.mEmail = email;
+            INSTANCE.mDescription = description;
+            INSTANCE.mName = name;
+            INSTANCE.mPhone = phone;
+            INSTANCE.mRating = rating;
         }
     }
 

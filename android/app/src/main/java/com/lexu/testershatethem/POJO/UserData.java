@@ -14,14 +14,15 @@ import java.util.ArrayList;
 public class UserData implements Serializable {
 
     interface UserUtils {
-        String USER_ID = "id";
+        String USER_ID = "uid";
         String USER_NAME = "name";
         String USER_DESCRIPTION = "description";
         String USER_EMAIL = "email";
         String USER_PHONE = "phone";
+        String USER_ADDRESS = "address";
         String USER_CITY = "city";
         String USER_COUNTRY = "country";
-        String USER_RATING = "rating";
+        String USER_RATING = "score";
     }
 
     private String mId = null;
@@ -29,19 +30,26 @@ public class UserData implements Serializable {
     private String mDescription = null;
     private String mEmail = null;
     private String mPhone = null;
+    private String mAddress = null;
     private String mCity = null;
     private String mCountry = null;
 
-    private float mRating = -1;
+    private int mRating = -1;
 
-    private UserData(String id, String name, String description, String email, String phone, String city, String country) {
+    private UserData(String id, String email, String name, String phone, String description, int rating) {
         mId = id;
         mName = name;
         mDescription = description;
         mEmail = email;
         mPhone = phone;
+        mRating = rating;
+    }
+
+    private UserData(String id, String name, String address, String city) {
+        mId = id;
+        mName = name;
+        mAddress = address;
         mCity = city;
-        mCountry = country;
     }
 
     //region GETTERS
@@ -76,6 +84,10 @@ public class UserData implements Serializable {
     public float getRating() {
         return mRating;
     }
+
+    public String getAddress() {
+        return mAddress;
+    }
     //endregion
 
     public static class UserParser {
@@ -85,17 +97,24 @@ public class UserData implements Serializable {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String id = jsonObject.getString(UserUtils.USER_ID);
                 String name = jsonObject.getString(UserUtils.USER_NAME);
-                String desc = jsonObject.getString(UserUtils.USER_DESCRIPTION);
-                String email = jsonObject.getString(UserUtils.USER_EMAIL);
-                String phone = jsonObject.getString(UserUtils.USER_PHONE);
+                String address = jsonObject.getString(UserUtils.USER_ADDRESS);
                 String city = jsonObject.getString(UserUtils.USER_CITY);
-                String country = jsonObject.getString(UserUtils.USER_COUNTRY);
-                float rating = (float) jsonObject.getDouble(UserUtils.USER_RATING);
 
-                result.add(new UserData(id, name, desc, email, phone, city, country));
+                result.add(new UserData(id, name, address, city));
             }
 
             return result;
+        }
+
+        static UserData parseUser(JSONObject jsonObject) throws JSONException {
+            String id = jsonObject.getString(UserUtils.USER_ID);
+            String email = jsonObject.getString(UserUtils.USER_EMAIL);
+            String name = jsonObject.getString(UserUtils.USER_NAME);
+            String phone = jsonObject.getString(UserUtils.USER_PHONE);
+            String desc = jsonObject.getString(UserUtils.USER_DESCRIPTION);
+            int score = jsonObject.getInt(UserUtils.USER_RATING);
+
+            return new UserData(id, email, name, phone, desc, score);
         }
     }
 }

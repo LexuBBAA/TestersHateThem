@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.lexu.testershatethem.POJO.UserData;
@@ -47,11 +48,20 @@ public class MainActivity extends AbstractActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        NavigationView nav = (NavigationView) mDrawerLayout.findViewById(R.id.navigation_container);
+
+        menu = nav.getMenu();
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.home:
+            case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
-                break;
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
