@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.lexu.testershatethem.AccountActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:title="My Account"
+        android:layout_alignParentTop="true"
+        app:titleTextColor="@android:color/white"/>
+
+    <TextView
+        android:id="@+id/user_name_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="24dp"
+        android:layout_margin="8dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignEnd="@+id/toolbar"
+        android:layout_alignStart="@+id/toolbar"/>
+
+    <TextView
+        android:id="@+id/user_description_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/user_name_field"
+        android:layout_alignEnd="@+id/user_name_field"
+        android:layout_alignStart="@+id/user_name_field"/>
+
+    <TextView
+        android:id="@+id/user_email_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/user_description_field"
+        android:layout_alignStart="@+id/user_description_field"
+        android:layout_alignEnd="@+id/user_description_field"/>
+
+    <TextView
+        android:id="@+id/user_phone_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16dp"
+        android:layout_margin="8dp"
+        android:minWidth="100dp"
+        android:layout_below="@+id/user_email_field"
+        android:layout_alignStart="@+id/user_email_field"/>
+
+    <TextView
+        android:id="@+id/user_rating_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16dp"
+        android:minWidth="100dp"
+        android:layout_margin="8dp"
+        android:layout_below="@+id/user_email_field"
+        android:layout_alignEnd="@+id/user_email_field"/>
+</RelativeLayout>

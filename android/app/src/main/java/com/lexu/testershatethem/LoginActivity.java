@@ -15,11 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lexu.testershatethem.POJO.HttpRequester;
+import com.lexu.testershatethem.POJO.UserData;
 import com.lexu.testershatethem.POJO.UserInstance;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, HttpRequester.OnNetworkListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
@@ -32,6 +34,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView registerLink = null;
 
     private HttpRequester mRequestManager = new HttpRequester();
+    private ArrayList<UserData> users = null;
+    private ArrayList<UserData> ranked = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +109,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         UserInstance.getInstance().setToken(token, type, new UserInstance.OnUserUpdateListener() {
                                             @Override
                                             public void onSuccess(ResponseCode code) {
-                                                LoginActivity.this.runOnUiThread(LoginActivity.this::login);
+                                                LoginActivity.this.runOnUiThread(() -> {
+                                                    LoginActivity.this.login();
+                                                    LoginActivity.this.finish();
+                                                });
                                             }
 
                                             @Override
@@ -154,8 +161,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void getUserData() {
+//        mRequestManager.users(new HttpRequester.OnNetworkListener() {
+//            @Override
+//            public void onSuccess(HttpRequester.NetworkPayload payload) {
+//                int code = payload.getCode();
+//                if(code != 200) {
+//                    String msg = payload.getMessage();
+//                    postInToast(msg);
+//                    return;
+//                }
+//
+//                LoginActivity.this.users = (ArrayList<UserData>) payload.getData();
+//                mRequestManager.getRankings(LoginActivity.this);
+//            }
+//
+//            @Override
+//            public void onFailure(HttpRequester.NetworkPayload payload) {
+//                Log.e(TAG, "onFailure: " + payload.toString());
+//                LoginActivity.this.runOnUiThread(() -> {
+//                    String message = payload.getMessage();
+//                    postInToast(message);
+//                });
+//            }
+//        });
+        mRequestManager.users(LoginActivity.this);
+    }
+
     private void login() {
         Intent navigate = new Intent(LoginActivity.this, MainActivity.class);
+//        navigate.putExtra(MainActivity.USER_DATA, this.users);
+//        navigate.putExtra(MainActivity.RANKINGS_USERS_DATA, this.ranked);
+
         startActivity(navigate);
         this.loginButton.setClickable(true);
         this.loginButton.setFocusable(true);
@@ -176,5 +213,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void postInToast(String msg) {
         Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSuccess(final HttpRequester.NetworkPayload payload) {
+        LoginActivity.this.runOnUiThread(() -> {
+        int code = payload.getCode();
+        if(code != 200) {
+            String msg = payload.getMessage();
+            postInToast(msg);
+        }
+        });
+    }
+
+    @Override
+    public void onFailure(final HttpRequester.NetworkPayload payload) {
+        Log.e(TAG, "onFailure: " + payload.toString());
+        LoginActivity.this.runOnUiThread(() -> {
+            String message = payload.getMessage();
+            postInToast(message);
+        });
     }
 }

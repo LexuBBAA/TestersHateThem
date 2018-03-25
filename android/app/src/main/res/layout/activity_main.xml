@@ -18,6 +18,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorPrimary"
                 android:gravity="start"
+                app:titleTextColor="@android:color/white"
                 app:navigationIcon="@drawable/ic_menu_white_24dp"
                 android:theme="@style/Base.ThemeOverlay.AppCompat.ActionBar"/>
 
@@ -34,20 +35,7 @@
                     android:background="@android:color/holo_blue_dark"
                     app:tabIndicatorColor="@android:color/background_light"
                     app:tabSelectedTextColor="@android:color/white"
-                    app:tabTextColor="@android:color/white">
-
-                    <android.support.design.widget.TabItem
-                        android:id="@+id/users_tab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Users"/>
-
-                    <android.support.design.widget.TabItem
-                        android:id="@+id/ranking_tab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ranking"/>
-                </android.support.design.widget.TabLayout>
+                    app:tabTextColor="@android:color/white"/>
             </android.support.v4.view.ViewPager>
         </RelativeLayout>
 

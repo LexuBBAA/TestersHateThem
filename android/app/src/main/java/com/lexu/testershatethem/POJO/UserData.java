@@ -90,17 +90,49 @@ public class UserData implements Serializable {
     }
     //endregion
 
-    public static class UserParser {
+    static class UserParser {
         static ArrayList<UserData> parseUser(JSONArray jsonArray) throws JSONException {
             ArrayList<UserData> result = new ArrayList<UserData>();
             for(int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String id = jsonObject.getString(UserUtils.USER_ID);
                 String name = jsonObject.getString(UserUtils.USER_NAME);
-                String address = jsonObject.getString(UserUtils.USER_ADDRESS);
-                String city = jsonObject.getString(UserUtils.USER_CITY);
+                String address = "";
+                String city = "";
+                String email = "";
+                String phone = "";
+                String description = "";
+                int score = -1;
 
-                result.add(new UserData(id, name, address, city));
+                if(jsonObject.has(UserUtils.USER_ADDRESS)) {
+                    address = jsonObject.getString(UserUtils.USER_ADDRESS);
+                }
+
+                if(jsonObject.has(UserUtils.USER_CITY)) {
+                    city = jsonObject.getString(UserUtils.USER_CITY);
+                }
+
+                if(jsonObject.has(UserUtils.USER_EMAIL)) {
+                    email = jsonObject.getString(UserUtils.USER_EMAIL);
+                }
+
+                if(jsonObject.has(UserUtils.USER_PHONE)) {
+                    phone = jsonObject.getString(UserUtils.USER_PHONE);
+                }
+
+                if(jsonObject.has(UserUtils.USER_DESCRIPTION)) {
+                    description = jsonObject.getString(UserUtils.USER_DESCRIPTION);
+                }
+
+                if(jsonObject.has(UserUtils.USER_RATING)) {
+                    score = jsonObject.getInt(UserUtils.USER_RATING);
+                }
+
+                if(!email.isEmpty() && !phone.isEmpty() && !description.isEmpty() && (score > -1)) {
+                    result.add(new UserData(id, email, name, phone, description, score));
+                } else {
+                    result.add(new UserData(id, name, address, city));
+                }
             }
 
             return result;

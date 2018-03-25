@@ -11,7 +11,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -434,7 +437,8 @@ public class HttpRequester {
                             return;
                         }
 
-                        JSONArray jsonArray = jsonData.getJSONArray(NetworkRequests.NetworkUtils.REQUEST_DATA);
+                        JSONArray jsonArray = new JSONArray(jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_DATA));
+//                        JSONArray jsonArray = new JSONArray(data);
                         payload = new NetworkPayload.Builder<ArrayList<UserData>>()
                                 .setData(UserData.UserParser.parseUser(jsonArray))
                                 .setCode(200)
@@ -451,6 +455,7 @@ public class HttpRequester {
                         return;
                     }
 
+                    Log.e(TAG, "onResponse: SUCCESS - LISTING");
                     listener.onSuccess(payload);
                 }
             };
@@ -603,10 +608,433 @@ public class HttpRequester {
                 }
             };
         }
+
+        static Callback newTransactionCallback(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Transaction placed successfully")
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    listener.onSuccess(payload);
+                }
+            };
+        }
+
+        static Callback acceptTransactionCallback(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Transaction accepted")
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    listener.onSuccess(payload);
+                }
+            };
+        }
+
+        static Callback confirmTransactionCallback(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Transaction confirmed")
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    listener.onSuccess(payload);
+                }
+            };
+        }
+
+        static Callback rateTransactionCallback(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Thank you for your feedback")
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    listener.onSuccess(payload);
+                }
+            };
+        }
+
+        static Callback getTransactions(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        JSONArray jsonArray = jsonData.getJSONArray(NetworkRequests.NetworkUtils.REQUEST_DATA);
+                        payload = new NetworkPayload.Builder<ArrayList<Transaction>>()
+                                .setData(Transaction.TransactionParser.parseTransactions(jsonArray))
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    listener.onSuccess(payload);
+                }
+            };
+        }
+
+        static Callback rankingsCallback(OnNetworkListener listener) {
+            return new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, "onFailure: " + e.getLocalizedMessage());
+
+                    NetworkPayload payload = new NetworkPayload.Builder<IOException>()
+                            .setData(e)
+                            .setMessage(e.getLocalizedMessage())
+                            .setCode(100)
+                            .build();
+                    listener.onFailure(payload);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    NetworkPayload payload = null;
+
+                    ResponseBody body = response.body();
+                    if(body == null) {
+                        Log.e(TAG, "onResponse: Response body is null");
+
+                        payload = new NetworkPayload.Builder<String>()
+                                .setData("Body is null")
+                                .setMessage("Response body is null")
+                                .setCode(101)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    String data = body.string();
+                    JSONObject jsonData = null;
+                    boolean status = true;
+                    try {
+                        jsonData = new JSONObject(data);
+                        status = jsonData.getBoolean(NetworkRequests.NetworkUtils.REQUEST_STATUS);
+                        if(!status) {
+                            String msg = jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_MESSAGE);
+                            payload = new NetworkPayload.Builder<Void>()
+                                    .setData(null)
+                                    .setMessage(msg)
+                                    .setCode(101)
+                                    .build();
+
+                            listener.onFailure(payload);
+                            return;
+                        }
+
+                        JSONArray jsonArray = new JSONArray(jsonData.getString(NetworkRequests.NetworkUtils.REQUEST_DATA));
+                        payload = new NetworkPayload.Builder<ArrayList<UserData>>()
+                                .setData(UserData.UserParser.parseUser(jsonArray))
+                                .setCode(200)
+                                .setMessage("SUCCESS")
+                                .build();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        payload = new NetworkPayload.Builder<JSONException>()
+                                .setData(e)
+                                .setMessage(e.getLocalizedMessage())
+                                .setCode(104)
+                                .build();
+                        listener.onFailure(payload);
+                        return;
+                    }
+
+                    Log.e(TAG, "onResponse: SUCCESS - RANKING");
+                    listener.onSuccess(payload);
+                }
+            };
+        }
     }
 
     public enum NetworkCalls {
-        LOGIN, REGISTER, GET_COUNTRIES, GET_CITIES, GET_MY_PROFILE, GET_USERS_PROFILES, GET_BASE_DATA
+        LOGIN, REGISTER, GET_COUNTRIES, GET_CITIES, GET_MY_PROFILE, GET_USERS_PROFILES, POST_NEW_TRANSACTION, CONFIRM_TRANSACTION, ACCEPT_TRANSACTION, RATE_TRANSACTION, GET_TRANSACTIONS, GET_RANKING, GET_BASE_DATA
     }
 
     private OkHttpClient mClient = null;
@@ -644,7 +1072,6 @@ public class HttpRequester {
         data.putString(NetworkRequests.NetworkUtils.REGISTER_USERNAME, email);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_PASSWORD, NetworkRequests.NetworkUtils.md5(password));
         data.putString(NetworkRequests.NetworkUtils.REGISTER_NAME, name);
-        data.putString(NetworkRequests.NetworkUtils.REGISTER_DESCRIPTION, description);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_ADDRESS, address);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_PHONE, phone);
         data.putString(NetworkRequests.NetworkUtils.REGISTER_DESCRIPTION, description);
@@ -743,5 +1170,107 @@ public class HttpRequester {
         }
 
         mClient.newCall(request).enqueue(NetworkCallbackFactory.userProfileCallback(callback));
+    }
+
+    public void newTransaction(String userId, int quantity, Date date, OnNetworkListener callback) {
+        Bundle args = new Bundle();
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_ID, userId);
+        args.putInt(NetworkRequests.NetworkUtils.TRANSACTION_QUANTITY, quantity);
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_DATE, new SimpleDateFormat("YYYY-mm--DD", Locale.getDefault()).format(date));
+        Request request = NetworkRequests.buildRequest(args, NetworkCalls.POST_NEW_TRANSACTION);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.newTransactionCallback(callback));
+    }
+
+    public void acceptTransaction(String id, OnNetworkListener callback) {
+        Bundle args = new Bundle();
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_ID, id);
+        Request request = NetworkRequests.buildRequest(args, NetworkCalls.ACCEPT_TRANSACTION);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.acceptTransactionCallback(callback));
+    }
+
+    public void confirmTransaction(String id, OnNetworkListener callback) {
+        Bundle args = new Bundle();
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_ID, id);
+        Request request = NetworkRequests.buildRequest(args, NetworkCalls.CONFIRM_TRANSACTION);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.confirmTransactionCallback(callback));
+    }
+
+    public void rateTransaction(String id, int rating, String comment, OnNetworkListener callback) {
+        Bundle args = new Bundle();
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_ID, id);
+        args.putInt(NetworkRequests.NetworkUtils.TRANSACTION_RATING, rating);
+        args.putString(NetworkRequests.NetworkUtils.TRANSACTION_COMMENT, comment);
+        Request request = NetworkRequests.buildRequest(args, NetworkCalls.RATE_TRANSACTION);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.rateTransactionCallback(callback));
+    }
+
+    public void getTransactions(OnNetworkListener callback) {
+        Request request = NetworkRequests.buildRequest(new Bundle(), NetworkCalls.GET_TRANSACTIONS);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.rateTransactionCallback(callback));
+    }
+
+    public void getRankings(OnNetworkListener callback) {
+        Request request = NetworkRequests.buildRequest(new Bundle(), NetworkCalls.GET_RANKING);
+        if(request == null) {
+            NetworkPayload payload = new NetworkPayload.Builder<Void>()
+                    .setData(null)
+                    .setCode(100)
+                    .setMessage("Could not make request")
+                    .build();
+            callback.onFailure(payload);
+            return;
+        }
+
+        mClient.newCall(request).enqueue(NetworkCallbackFactory.rankingsCallback(callback));
     }
 }

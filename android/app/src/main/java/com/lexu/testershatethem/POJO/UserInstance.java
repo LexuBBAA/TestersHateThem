@@ -52,7 +52,7 @@ public final class UserInstance {
     }
     //endregion
 
-    public void setData(String email, String name, String description, String phone, int rating) {
+    void setData(String email, String name, String description, String phone, int rating) {
         synchronized (LOCK) {
             INSTANCE.mEmail = email;
             INSTANCE.mDescription = description;
@@ -112,6 +112,12 @@ public final class UserInstance {
     public String getType() {
         synchronized (LOCK) {
             return mType;
+        }
+    }
+
+    public int getRating() {
+        synchronized (LOCK) {
+            return mRating;
         }
     }
     //endregion

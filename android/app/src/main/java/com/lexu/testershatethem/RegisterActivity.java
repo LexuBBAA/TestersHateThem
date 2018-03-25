@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,6 +39,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private RadioGroup typeInput = null;
     private AppCompatSpinner countrySpinner = null;
     private AppCompatSpinner citySpinner = null;
+    private AppCompatRadioButton consumerRadioBtn = null;
+    private AppCompatRadioButton providerRadioBtn = null;
 
     private AppCompatButton registerButton = null;
     private HttpRequester mRequester = new HttpRequester();
@@ -68,7 +71,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         this.countrySpinner = (AppCompatSpinner) findViewById(R.id.country_input_field);
         this.citySpinner = (AppCompatSpinner) findViewById(R.id.city_input_field);
         this.registerButton = (AppCompatButton) findViewById(R.id.register_button);
-
+        this.providerRadioBtn = (AppCompatRadioButton) findViewById(R.id.producer_type_radio_btn);
+        this.consumerRadioBtn = (AppCompatRadioButton) findViewById(R.id.consumer_type_radio_btn);
         setupUI();
 
         this.registerButton.setClickable(false);
@@ -231,18 +235,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String desc = this.descriptionInput.getText().toString();
         String phone = this.phoneInput.getText().toString();
         String address = this.addressInput.getText().toString();
-        String type = this.typeInput.getCheckedRadioButtonId() == R.id.producer_type_radio_btn ? "provider" : "consumer";
+        String type = this.providerRadioBtn.isChecked() ? "provider" : "consumer";
         String countryId = "";
         for(Country c: mCountries) {
             if(c.getName().contentEquals(this.countrySpinner.getSelectedItem().toString())) {
                 countryId = c.getId();
                 break;
             }
-        }
-
-        if(countryId.isEmpty()) {
-            ((TextView) this.countrySpinner.getSelectedItem()).setError("Please select a country");
-            return;
         }
 
         String cityId = "";
@@ -253,10 +252,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
-        if(cityId.isEmpty()) {
-            ((TextView) this.citySpinner.getSelectedItem()).setError("Please select a city");
-            return;
-        }
+
         try {
             mRequester.register(email, pass, name, desc, address, phone, type, countryId, cityId, new HttpRequester.OnNetworkListener() {
                 @Override

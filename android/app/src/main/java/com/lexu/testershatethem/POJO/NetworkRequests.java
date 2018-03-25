@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import okhttp3.FormBody;
@@ -16,6 +15,9 @@ import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.CITY_CO
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.COUNTRIES;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.PROFILE;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.TOKEN;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.TRANSACTION_DATE;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.TRANSACTION_ID;
+import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.TRANSACTION_QUANTITY;
 import static com.lexu.testershatethem.POJO.NetworkRequests.NetworkUtils.USER_ID;
 
 /**
@@ -29,6 +31,11 @@ final class NetworkRequests {
         private static final String LOGIN = "login";
         private static final String REGISTER = "register";
         private static final String LISTING = "listing";
+        private static final String NEW_TRANSACTION = "transactions";
+        private static final String ACCEPT_TRANSACTION = "approve";
+        private static final String CLOSE_TRANSACTION = "finish";
+        private static final String REVIEW_TRANSACTION = "rating";
+        static final String RANKING = "rankings";
         static final String PROFILE = "profile";
         static final String COUNTRIES = "countries";
         static final String CITIES = "cities/";
@@ -49,7 +56,7 @@ final class NetworkRequests {
         static final String REGISTER_USERNAME = "email";
         static final String REGISTER_NAME = "user_name";
         static final String REGISTER_PASSWORD = "password";
-        static final String REGISTER_DESCRIPTION = "user_desc";
+        static final String REGISTER_DESCRIPTION = "desc";
         static final String REGISTER_ADDRESS = "address";
         static final String REGISTER_PHONE = "phone";
         static final String REGISTER_TYPE = "user_type";
@@ -65,17 +72,26 @@ final class NetworkRequests {
         static final String CITY_COUNTRY_ID = "country_id";
         //endregion
 
+        //region TRANSACTIONS
+        static final String TRANSACTION_ID = "id";
+        static final String TRANSACTION_QUANTITY = "quantity";
+        static final String TRANSACTION_DATE = "date";
+        static final String TRANSACTION_RATING = "rating";
+        static final String TRANSACTION_COMMENT = "comment";
+        //endregion
+
         static String md5(String str) throws NoSuchAlgorithmException {
-            byte[] bytes = str.getBytes();
-
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            bytes = md.digest(bytes);
-
-            StringBuilder buffer = new StringBuilder();
-            for (byte aByte : bytes) {
-                buffer.append(Integer.toHexString((aByte & 0xFF) | 0x100).substring(1, 3));
-            }
-            return buffer.toString();
+//            byte[] bytes = str.getBytes();
+//
+//            MessageDigest md = MessageDigest.getInstance("MD5");
+//            bytes = md.digest(bytes);
+//
+//            StringBuilder buffer = new StringBuilder();
+//            for (byte aByte : bytes) {
+//                buffer.append(Integer.toHexString((aByte & 0xFF) | 0x100).substring(1, 3));
+//            }
+//            return buffer.toString();
+            return str;
         }
     }
 
@@ -87,7 +103,7 @@ final class NetworkRequests {
                     .build();
         }
 
-        static RequestBody registerBody(@NonNull String email, @NonNull String password, @NonNull String name, @NonNull String address, @NonNull String phone, @NonNull String description, @NonNull String countryId, @NonNull String cityId) {
+        static RequestBody registerBody(@NonNull String email, @NonNull String password, @NonNull String name, @NonNull String address, @NonNull String phone, @NonNull String description, @NonNull String countryId, @NonNull String cityId, @NonNull String type) {
             return new FormBody.Builder()
                     .add(NetworkUtils.REGISTER_USERNAME, email)
                     .add(NetworkUtils.REGISTER_NAME, name)
@@ -97,12 +113,28 @@ final class NetworkRequests {
                     .add(NetworkUtils.REGISTER_DESCRIPTION, description)
                     .add(NetworkUtils.REGISTER_COUNTRY_ID, countryId)
                     .add(NetworkUtils.REGISTER_CITY_ID, cityId)
+                    .add(NetworkUtils.REGISTER_TYPE, type)
                     .build();
         }
 
         static RequestBody userProfile(String profileId) {
             return new FormBody.Builder()
                     .add(NetworkUtils.PROFILE, profileId)
+                    .build();
+        }
+
+        static RequestBody newTransaction(String id, int quantity, String date) {
+            return new FormBody.Builder()
+                    .add(TRANSACTION_ID, id)
+                    .add(TRANSACTION_QUANTITY, String.valueOf(quantity))
+                    .add(TRANSACTION_DATE, String.valueOf(date))
+                    .build();
+        }
+
+        static RequestBody reviewTransaction(int rating, String comment) {
+            return new FormBody.Builder()
+                    .add(NetworkUtils.TRANSACTION_RATING, String.valueOf(rating))
+                    .add(NetworkUtils.TRANSACTION_COMMENT, comment)
                     .build();
         }
     }
@@ -187,7 +219,8 @@ final class NetworkRequests {
                                         phone,
                                         description,
                                         countryId,
-                                        cityId
+                                        cityId,
+                                        type
                                 )
                         )
                         .build();
@@ -229,6 +262,59 @@ final class NetworkRequests {
                         .addHeader(TOKEN, UserInstance.getInstance().getSessionId())
                         .post(PostRequestBuilder.userProfile(profileId))
                         .url(NetworkUtils.API_URL + NetworkUtils.PROFILE)
+                        .build();
+                //endregion
+            case POST_NEW_TRANSACTION:
+                //region New Transaction Request
+                String id = data.getString(NetworkUtils.TRANSACTION_ID);
+                int quantity = data.getInt(NetworkUtils.TRANSACTION_QUANTITY);
+                String dateString = data.getString(NetworkUtils.TRANSACTION_DATE);
+                return new Request.Builder()
+                        .addHeader(TOKEN, UserInstance.getInstance().getSessionId())
+                        .post(PostRequestBuilder.newTransaction(id, quantity, dateString))
+                        .url(NetworkUtils.API_URL + NetworkUtils.NEW_TRANSACTION)
+                        .build();
+                //endregion
+            case ACCEPT_TRANSACTION:
+                //region Accept Transaction:
+                id = data.getString(NetworkUtils.TRANSACTION_ID);
+                return new Request.Builder()
+                        .addHeader(NetworkUtils.TOKEN, UserInstance.getInstance().getSessionId())
+                        .url(NetworkUtils.API_URL + NetworkUtils.NEW_TRANSACTION + '/' + id + NetworkUtils.ACCEPT_TRANSACTION)
+                        .build();
+                //endregion
+            case CONFIRM_TRANSACTION:
+                //region Confirm Transaction Request
+                id = data.getString(TRANSACTION_ID);
+                return new Request.Builder()
+                        .addHeader(NetworkUtils.TOKEN, UserInstance.getInstance().getSessionId())
+                        .url(NetworkUtils.API_URL + NetworkUtils.NEW_TRANSACTION + '/' + id + NetworkUtils.CLOSE_TRANSACTION)
+                        .build();
+
+                //endregion
+            case RATE_TRANSACTION:
+                //region Rate Transaction
+                id = data.getString(NetworkUtils.TRANSACTION_ID);
+                int rating = data.getInt(NetworkUtils.TRANSACTION_RATING);
+                String comment = data.getString(NetworkUtils.TRANSACTION_COMMENT);
+                return new Request.Builder()
+                        .addHeader(NetworkUtils.TOKEN, UserInstance.getInstance().getSessionId())
+                        .post(PostRequestBuilder.reviewTransaction(rating, comment))
+                        .url(NetworkUtils.API_URL + NetworkUtils.NEW_TRANSACTION + '/' + id + NetworkUtils.REVIEW_TRANSACTION)
+                        .build();
+                //endregion
+            case GET_TRANSACTIONS:
+                //region Get Transactions Request
+                return new Request.Builder()
+                        .url(NetworkUtils.API_URL + NetworkUtils.NEW_TRANSACTION)
+                        .addHeader(NetworkUtils.TOKEN, UserInstance.getInstance().getSessionId())
+                        .build();
+                //endregion
+            case GET_RANKING:
+                //region Get Ranking Request
+                return new Request.Builder()
+                        .addHeader(NetworkUtils.TOKEN, UserInstance.getInstance().getSessionId())
+                        .url(NetworkUtils.API_URL + NetworkUtils.RANKING)
                         .build();
                 //endregion
             default:
