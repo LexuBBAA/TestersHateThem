@@ -12,6 +12,7 @@ const address      = require('./routes/address');
 const listing      = require('./routes/listing');
 const profile      = require('./routes/profile');
 const transactions = require('./routes/transactions');
+const rankings     = require('./routes/rankings');
 
 // app variables
 const app = express();
@@ -71,6 +72,7 @@ app.use('/address', address);
 app.use('/profile', profile);
 app.use('/listing', listing);
 app.use('/transactions', transactions);
+app.use('/rankings', rankings);
 
 app.get('/', (req, res) => {
     res.json({
