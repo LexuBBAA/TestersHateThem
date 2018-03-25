@@ -5,6 +5,7 @@ const jwt        = require('jsonwebtoken');
 
 // routes
 const login        = require('./routes/login');
+const logout       = require('./routes/login');
 const register     = require('./routes/register');
 const cities       = require('./routes/cities');
 const countries    = require('./routes/countries');
@@ -68,6 +69,7 @@ app.use('/countries', countries);
 
 app.use(requireToken);
 
+app.use('/logout', logout);
 app.use('/address', address);
 app.use('/profile', profile);
 app.use('/listing', listing);

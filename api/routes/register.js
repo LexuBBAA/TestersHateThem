@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     let email       = req.body.email;
     let password    = req.body.password;
     let name        = req.body.user_name;
-    let type        = req.body.user_type;
+    let user_type   = req.body.user_type;
     let description = req.body.desc;
     let city_id     = req.body.city_id;
     let country_id  = req.body.country_id;
@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
     let phone       = req.body.phone;
 
 
-    db.query(`SELECT register('${email}', '${password}', '${name}', '${phone}', '${type}', '${description}', '${city_id}', '${country_id}', '${address}') AS status`, (err, results) => {
+    db.query(`SELECT register('${email}', '${password}', '${name}', '${phone}', '${user_type}', '${description}', '${city_id}', '${country_id}', '${address}') AS status`, (err, results) => {
         if (err) {
             console.log(err);
             res.json({

@@ -4,23 +4,22 @@ const db = require('../db.js');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    let user_id = req.body.user_id;
-    // let city_id = req.params.city_id;
-
-    db.query(`CALL listing('${user_id}',0)`, (err, results) => {
+router.get('/:device_id', (req, res) => {
+    let device_id = req.params.device_id;
+    
+    db.query(``, (err, results) => {
         if (err) {
             console.log(err);
             res.json({
                 success: false,
-                message: 'could not get listing!'
+                message: 'could not log out!'
             });
             return;
         }
 
         res.json({
             success: true,
-            data: JSON.stringify(results[0])
+            message: 'logged out!'
         })
         
     });

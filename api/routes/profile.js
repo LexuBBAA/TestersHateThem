@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     let user_id = req.body.user_id;
 
-    db.query(`SELECT name, description, score FROM users WHERE uid = ${user_id}`, (err, results) => {
+    db.query(`SELECT uid, email, name, phone, description, score FROM users WHERE uid = ${user_id}`, (err, results) => {
         if (err) {
             console.log(err);
             res.json({
@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 
         res.json({
             success: true,
-            data: results
+            data: results[0]
         })
         
     });
@@ -40,7 +40,7 @@ router.get('/:id', (req, res) => {
 
         res.json({
             success: true,
-            data: results
+            data: results[0]
         })
         
     });
