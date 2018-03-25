@@ -2,22 +2,17 @@ package com.lexu.testershatethem;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.lexu.testershatethem.POJO.UserData;
-import com.lexu.testershatethem.POJO.UserInstance;
 
 import java.util.ArrayList;
 
@@ -34,51 +29,6 @@ abstract class AbstractActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.home:
-                mDrawerLayout.openDrawer(Gravity.START);
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    protected void initMenu() {
-        NavigationView nav = (NavigationView) mDrawerLayout.findViewById(R.id.navigation_container);
-        nav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                mDrawerLayout.closeDrawer(Gravity.START);
-
-                switch (item.getItemId()) {
-                    case R.id.home:
-                        navigateHome();
-                        break;
-                    case R.id.account:
-                        navigateAccount();
-                        break;
-                    case R.id.history:
-                        navigateHistory();
-                        break;
-                    case R.id.users:
-                        navigateUsers();
-                        break;
-                    case R.id.ranking:
-                        navigateRanking();
-                        break;
-                    case R.id.logout:
-                        UserInstance.getInstance().logout();
-                        onBackPressed();
-                        break;
-                }
-
-                return true;
-            }
-        });
-    }
-
     protected abstract void navigateRanking();
 
     protected abstract void navigateUsers();
@@ -93,7 +43,9 @@ abstract class AbstractActivity extends AppCompatActivity {
         private static final String TAG = UsersFragment.class.getSimpleName();
 
         public static final String DATA_KEY = "data";
+        public static final String FRAGMENT_TYPE = "fragment_type";
 
+        private int fragmentType = -1;
         private ArrayList<UserData> data = null;
         private OnNavigationToDetailsListener mOnNavigationToDetailsListener = null;
 
@@ -118,6 +70,10 @@ abstract class AbstractActivity extends AppCompatActivity {
                 if(args.containsKey(DATA_KEY)) {
                     this.data = (ArrayList<UserData>) args.getSerializable(DATA_KEY);
                 }
+
+                if(args.containsKey(FRAGMENT_TYPE)) {
+                    this.fragmentType = args.getInt(FRAGMENT_TYPE);
+                }
             }
         }
 
@@ -127,7 +83,7 @@ abstract class AbstractActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_users_layout, container);
 
             RecyclerView list = (RecyclerView) view.findViewById(R.id.list_view);
-            ListAdapter adapter = new ListAdapter(this.data);
+            ListAdapter adapter = new ListAdapter(getContext(), this.data);
             adapter.setOnRecylerItemClickedListener(new OnRecylerItemClickedListener() {
                 @Override
                 public void onClick(ListAdapter.DataHolder holder) {
@@ -143,20 +99,24 @@ abstract class AbstractActivity extends AppCompatActivity {
 class ListAdapter extends RecyclerView.Adapter {
 
     private AbstractActivity.UsersFragment.OnRecylerItemClickedListener mOnRecylerItemClickedListener = null;
+    private Context mContext = null;
     private ArrayList<UserData> data = null;
 
-    public ListAdapter(ArrayList<UserData> data) {
+    ListAdapter(Context context, ArrayList<UserData> data) {
         super();
         this.data = data;
+        mContext = context;
     }
 
-    public void setOnRecylerItemClickedListener(AbstractActivity.UsersFragment.OnRecylerItemClickedListener onRecylerItemClickedListener) {
+    void setOnRecylerItemClickedListener(AbstractActivity.UsersFragment.OnRecylerItemClickedListener onRecylerItemClickedListener) {
         mOnRecylerItemClickedListener = onRecylerItemClickedListener;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(mContext).inflate(R.layout.user_card_layout, parent);
+
+        return new DataHolder(view);
     }
 
     @Override
@@ -168,7 +128,7 @@ class ListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.data != null ? this.data.size(): 0;
     }
 
     class DataHolder extends RecyclerView.ViewHolder {
