@@ -4,11 +4,11 @@ const db = require('../db.js');
 
 const router = express.Router();
 
-router.get('/:city_id', (req, res) => {
+router.get('/', (req, res) => {
     let user_id = req.body.user_id;
-    let city_id = req.params.city_id;
+    // let city_id = req.params.city_id;
 
-    db.query(`CALL listing('${user_id}','${city_id}',0)`, (err, results) => {
+    db.query(`CALL listing('${user_id}',0)`, (err, results) => {
         if (err) {
             console.log(err);
             res.json({

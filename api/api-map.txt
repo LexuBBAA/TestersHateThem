@@ -15,7 +15,7 @@ GET /countries
     response success: success, data
     response failure: success, message
 
-GET /listing/:city_id:
+GET /listing
     response success: success, data
     response failure: success, message
 
@@ -38,23 +38,23 @@ GET /transactions
     response failure: success, message
 
 POST /transactions
-        response success: success, transaction_id
-        response failure: success, message
+    request body: id, quantity, due_date
+    response success: success, transaction_id
+    response failure: success, message
 
 POST /transactions/:tid/approve
-        request body: quantity, due_date
-        response success: success, message
-        response failure: success, message
+    response success: success, message
+    response failure: success, message
 
 POST /transactions/:tid/finish
-        response success: success, message
-        response failure: success, message
+    response success: success, message
+    response failure: success, message
 
 POST /transactions/:tid/rating
-        request body: rating, message
-        response success: success, message
-        response failure: success, message
+    request body: rating, message
+    response success: success, message
+    response failure: success, message
 
 DELETE /transactions/:tid
-        response success: success, message
-        response failure: success, message
+    response success: success, message
+    response failure: success, message
